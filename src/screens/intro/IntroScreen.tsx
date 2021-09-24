@@ -17,8 +17,8 @@ export function IntroScreen() {
         justify-content: space-between;
         gap: 32px;
         padding: 64px;
-        background-color: ${theme.color.background.secondary};
-        color: ${theme.color.text.secondary};
+        background-color: ${theme.color.background.dark.primary};
+        color: ${theme.color.text.dark.primary};
       `}
     >
       <h1

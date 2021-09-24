@@ -1,11 +1,14 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import { useNavigate } from "react-router";
 import { Button } from "../../app/ui/Button";
 import { Input } from "../../app/ui/Input";
 import { ReactComponent as AmountIcon } from "../../img/amount.svg";
 import { ReactComponent as DifficultyIcon } from "../../img/difficulty.svg";
 
 export function IntroForm() {
+  const navigate = useNavigate();
+
   return (
     <div
       css={css`
@@ -40,9 +43,11 @@ export function IntroForm() {
       />
 
       <Button
+        variant="accent"
         css={css`
           margin-top: 32px;
         `}
+        onClick={() => navigate("game")}
       >
         Start
       </Button>

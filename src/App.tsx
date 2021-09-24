@@ -1,8 +1,11 @@
 import { ThemeProvider } from "@emotion/react";
 import React from "react";
 import { Provider } from "react-redux";
+import { Route, Routes } from "react-router";
+import { BrowserRouter } from "react-router-dom";
 import { store } from "./app/store";
 import { theme } from "./app/theme";
+import { GameScreen } from "./screens/game/GameScreen";
 import { IntroScreen } from "./screens/intro/IntroScreen";
 
 export function App() {
@@ -10,7 +13,12 @@ export function App() {
     <React.StrictMode>
       <Provider store={store}>
         <ThemeProvider theme={theme}>
-          <IntroScreen />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<IntroScreen />} />
+              <Route path="game" element={<GameScreen />} />
+            </Routes>
+          </BrowserRouter>
         </ThemeProvider>
       </Provider>
     </React.StrictMode>

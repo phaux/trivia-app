@@ -1,12 +1,22 @@
 export const theme = {
   color: {
     text: {
-      primary: "black",
-      secondary: "white",
+      light: {
+        primary: "#4953BE",
+        secondary: "#4953BE70",
+      },
+      dark: {
+        primary: "white",
+        secondary: "#FFFFFF70",
+      },
     },
     background: {
-      primary: "white",
-      secondary: "#4751c0",
+      light: {
+        primary: "white",
+      },
+      dark: {
+        primary: "#4751c0",
+      },
     },
     accent: {
       light: "#f7a491",
