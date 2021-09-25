@@ -22,6 +22,7 @@ export const theme = {
       light: "#f7a491",
       dark: "#ff6165",
       shadow: "#c65252",
+      background: "#ffdbdb",
     },
   },
 };

@@ -7,6 +7,7 @@ import { store } from "./app/store";
 import { theme } from "./app/theme";
 import { GameScreen } from "./screens/game/GameScreen";
 import { IntroScreen } from "./screens/intro/IntroScreen";
+import { SummaryScreen } from "./screens/summary/SummaryScreen";
 
 export function App() {
   return (
@@ -17,6 +18,7 @@ export function App() {
             <Routes>
               <Route path="/" element={<IntroScreen />} />
               <Route path="game" element={<GameScreen />} />
+              <Route path="summary" element={<SummaryScreen />} />
             </Routes>
           </BrowserRouter>
         </ThemeProvider>
