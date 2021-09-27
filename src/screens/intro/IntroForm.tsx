@@ -1,13 +1,33 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import { ChangeEvent } from "react";
 import { useNavigate } from "react-router";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { Button } from "../../app/ui/Button";
 import { Input } from "../../app/ui/Input";
+import {
+  fetchQuestions,
+  selectQuestions,
+  setQuestionAmount,
+  setQuestionDifficulty,
+} from "../../features/questions/questionsSlice";
 import { ReactComponent as AmountIcon } from "../../img/amount.svg";
 import { ReactComponent as DifficultyIcon } from "../../img/difficulty.svg";
 
 export function IntroForm() {
   const navigate = useNavigate();
+  const questions = useAppSelector(selectQuestions);
+  const dispatch = useAppDispatch();
+
+  function handleStartClick() {
+    dispatch(
+      fetchQuestions({
+        amount: questions.currentAmount,
+        difficulty: questions.currentDifficulty,
+      })
+    );
+    navigate("game");
+  }
 
   return (
     <div
@@ -25,7 +45,10 @@ export function IntroForm() {
         id="input-difficulty"
         icon={<DifficultyIcon />}
         label="Difficulty"
-        value="hard"
+        value={questions.currentDifficulty}
+        onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+          dispatch(setQuestionDifficulty(event.target.value as never))
+        }
       >
         <option>easy</option>
         <option>medium</option>
@@ -39,7 +62,10 @@ export function IntroForm() {
         max={20}
         icon={<AmountIcon />}
         label="Amount"
-        value="10"
+        value={questions.currentAmount}
+        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+          dispatch(setQuestionAmount(Number(event.target.value)))
+        }
       />
 
       <Button
@@ -47,7 +73,7 @@ export function IntroForm() {
         css={css`
           margin-top: 32px;
         `}
-        onClick={() => navigate("game")}
+        onClick={handleStartClick}
       >
         Start
       </Button>

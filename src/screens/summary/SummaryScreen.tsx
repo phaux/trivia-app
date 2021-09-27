@@ -1,19 +1,23 @@
 /** @jsxImportSource @emotion/react */
 import { css, useTheme } from "@emotion/react";
 import { useNavigate } from "react-router";
+import { useAppSelector } from "../../app/hooks";
+import { htmlDecode } from "../../app/htmlDecode";
 import { Button } from "../../app/ui/Button";
 import { Card } from "../../app/ui/Card";
+import { selectQuestions } from "../../features/questions/questionsSlice";
 import { ReactComponent as CheckIcon } from "../../img/check.svg";
 import { ReactComponent as CrossIcon } from "../../img/cross.svg";
-import { ReactComponent as StarIcon } from "../../img/star.svg";
-import avatarUrl from "./avatar.png";
+import { ScoreDisplay } from "./ScoreDisplay";
 
 export function SummaryScreen() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const questions = useAppSelector(selectQuestions);
 
-  const score = 8;
-  const maxScore = 10;
+  function isAnswerCorrect(idx: number) {
+    return questions.questions[idx].correct_answer === questions.answers[idx];
+  }
 
   return (
     <div
@@ -30,74 +34,10 @@ export function SummaryScreen() {
         color: ${theme.color.text.dark.primary};
       `}
     >
-      <div
-        css={css`
-          display: flex;
-          flex-direction: column;
-          align-items: stretch;
-          gap: 32px;
-        `}
-      >
-        <h2
-          css={css`
-            font-weight: bold;
-            font-size: 24px;
-            text-align: center;
-          `}
-        >
-          <img
-            src={avatarUrl}
-            alt="Avatar"
-            css={css`
-              vertical-align: middle;
-              margin-right: 16px;
-              width: 50px;
-              height: 50px;
-              border-radius: 100px;
-              background-color: ${theme.color.background.light.primary};
-              object-fit: cover;
-            `}
-          />
-          <span>You scored</span>
-          <span
-            css={css`
-              margin-left: 16px;
-              font-weight: bold;
-            `}
-          >
-            <span
-              css={css`
-                font-size: 1.4em;
-                color: ${theme.color.accent.light};
-              `}
-            >
-              {score}
-            </span>
-            /{maxScore}
-          </span>
-        </h2>
-        <div
-          css={css`
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-          `}
-        >
-          {Array<null>(maxScore)
-            .fill(null)
-            .map((value, index) => (
-              <StarIcon
-                css={css`
-                  color: ${index < score
-                    ? theme.color.accent.light
-                    : theme.color.text.dark.secondary};
-                `}
-              />
-            ))}
-        </div>
-      </div>
+      <ScoreDisplay
+        score={questions.answers.filter((answer, idx) => isAnswerCorrect(idx)).length}
+        maxScore={questions.answers.length}
+      />
 
       <div
         role="listbox"
@@ -111,12 +51,19 @@ export function SummaryScreen() {
           gap: 24px;
         `}
       >
-        <Card role="listitem" icon={<CheckIcon aria-label="good" />}>
-          Test test test teset etset set etes test etsetset
-        </Card>
-        <Card role="listitem" error icon={<CrossIcon aria-label="bad" />}>
-          Test test test teset etset set etes test etsetset
-        </Card>
+        {questions.answers.map((answer, idx) => {
+          const isCorrect = isAnswerCorrect(idx);
+          return (
+            <Card
+              key={idx}
+              role="listitem"
+              icon={isCorrect ? <CheckIcon aria-label="good" /> : <CrossIcon aria-label="bad" />}
+              error={!isCorrect}
+            >
+              {htmlDecode(questions.questions[idx].question)}
+            </Card>
+          );
+        })}
       </div>
 
       <div

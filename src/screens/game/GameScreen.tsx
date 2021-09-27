@@ -1,10 +1,33 @@
 /** @jsxImportSource @emotion/react */
 import { css, useTheme } from "@emotion/react";
+import { Fragment, useState } from "react";
+import { useNavigate } from "react-router";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { htmlDecode } from "../../app/htmlDecode";
 import { Button } from "../../app/ui/Button";
 import { Progress } from "../../app/ui/Progress";
+import { answerQuestion, selectQuestions } from "../../features/questions/questionsSlice";
+import { AnswerList } from "./AnswerList";
+import { GameSubtitle } from "./GameSubtitle";
+import { GameTitle } from "./GameTitle";
 
 export function GameScreen() {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const questions = useAppSelector(selectQuestions);
+  const [questionIdx, setQuestionIdx] = useState(0);
+
+  const question = questions.questions[questionIdx];
+
+  function handleAnswer(answer: string) {
+    dispatch(answerQuestion(answer));
+    if (questionIdx + 1 >= questions.questions.length) {
+      navigate("../summary");
+      return;
+    }
+    setQuestionIdx((idx) => idx + 1);
+  }
 
   return (
     <div
@@ -21,55 +44,43 @@ export function GameScreen() {
         color: ${theme.color.text.light.primary};
       `}
     >
-      <h1
-        css={css`
-          font-weight: bold;
-          font-size: 72px;
-          text-align: center;
-        `}
-      >
-        Entertainment: Videogames
-      </h1>
+      {questions.loading ? (
+        // loading
+        <GameTitle>Loading...</GameTitle>
+      ) : questions.error != null ? (
+        // error
+        <Fragment>
+          <GameTitle>Error: {questions.error}</GameTitle>
+          <Button variant="secondary" onClick={() => navigate("..")}>
+            Restart
+          </Button>
+        </Fragment>
+      ) : question != null ? (
+        // success
+        <Fragment>
+          <GameTitle>{question.category}</GameTitle>
+          <GameSubtitle>level {questionIdx + 1}</GameSubtitle>
+          <Progress value={questionIdx} max={questions.questions.length} />
+          <p
+            css={css`
+              margin: 32px auto;
+              width: 100%;
+              max-width: 630px;
+              font-size: 24px;
+              line-height: 32px;
+              text-align: center;
+            `}
+          >
+            {htmlDecode(question.question)}
+          </p>
 
-      <h2
-        css={css`
-          font-size: 28px;
-          text-align: center;
-          letter-spacing: 8px;
-        `}
-      >
-        level 1
-      </h2>
-
-      <Progress value={8} max={10} />
-
-      <p
-        css={css`
-          margin: 32px auto;
-          width: 100%;
-          max-width: 630px;
-          font-size: 24px;
-          line-height: 32px;
-          text-align: center;
-        `}
-      >
-        The retail disc of Tony Hawk’s Pro Skater 5 only comes with the tutorial
-      </p>
-
-      <div
-        css={css`
-          margin: 0 auto;
-          width: 100%;
-          max-width: 500px;
-          display: flex;
-          flex-direction: column;
-          align-items: stretch;
-          gap: 32px;
-        `}
-      >
-        <Button variant="primary">True</Button>
-        <Button variant="secondary">False</Button>
-      </div>
+          <AnswerList onAnswer={handleAnswer} />
+        </Fragment>
+      ) : (
+        <Button variant="secondary" onClick={() => navigate("..")}>
+          Restart
+        </Button>
+      )}
     </div>
   );
 }
